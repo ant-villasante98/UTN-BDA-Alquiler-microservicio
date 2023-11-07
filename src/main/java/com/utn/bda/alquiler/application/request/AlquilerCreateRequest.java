@@ -16,8 +16,6 @@ public class AlquilerCreateRequest {
 
     private LocalDateTime fechaHoraRetiro;
 
-    private Float monto;
-
     private Integer idTarifa;
 
     public Integer getEstado(){

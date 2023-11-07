@@ -49,7 +49,7 @@ public class AlquilerController {
                             null,
                             alquilerCreate.getFechaHoraRetiro(),
                             null,
-                            alquilerCreate.getMonto(),
+                            null,
                             alquilerCreate.getIdTarifa());
             return new ResponseEntity<>(alquiler , HttpStatus.CREATED);
         }catch (Exception e){
