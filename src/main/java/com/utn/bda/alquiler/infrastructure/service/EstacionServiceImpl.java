@@ -10,15 +10,17 @@ import org.springframework.web.client.RestTemplate;
 public class EstacionServiceImpl implements EstacionService {
     private final String resourceUrl = "http://localhost:8081/api/v1/estaciones";
 
-    private final RestTemplate restTemplate;
-
-    public EstacionServiceImpl() {
-        this.restTemplate = new RestTemplate();
-    }
 
     @Override
     public Estacion getById(Integer id) {
-        ResponseEntity<Estacion> response = restTemplate.getForEntity(this.resourceUrl +"/"+id, Estacion.class);
-        return response.getBody();
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Estacion> response = restTemplate.getForEntity(this.resourceUrl +"/{id}", Estacion.class,id);
+        if(response.getStatusCode().is2xxSuccessful()){
+
+            return response.getBody();
+        }
+        return null;
+
+
     }
 }

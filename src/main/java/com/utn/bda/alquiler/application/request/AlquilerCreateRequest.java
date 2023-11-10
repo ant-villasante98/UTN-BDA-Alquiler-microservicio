@@ -10,18 +10,11 @@ import java.time.LocalDateTime;
 public class AlquilerCreateRequest {
     private String idCliente;
 
-    private Integer estado;
 
     private Integer estacionRetiro;
 
-    private LocalDateTime fechaHoraRetiro;
 
     private Integer idTarifa;
 
-    public Integer getEstado(){
-        return 1;
-    }
-    public LocalDateTime getFechaHoraRetiro(){
-        return LocalDateTime.now();
-    }
+
 }

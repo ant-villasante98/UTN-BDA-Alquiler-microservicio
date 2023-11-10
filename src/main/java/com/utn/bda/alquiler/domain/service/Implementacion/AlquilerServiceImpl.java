@@ -2,6 +2,7 @@ package com.utn.bda.alquiler.domain.service.Implementacion;
 
 import com.utn.bda.alquiler.domain.model.Alquiler;
 import com.utn.bda.alquiler.domain.model.Estacion;
+import com.utn.bda.alquiler.domain.model.Tarifa;
 import com.utn.bda.alquiler.domain.repository.AlquilerRepository;
 import com.utn.bda.alquiler.domain.service.AlquilerSevice;
 import com.utn.bda.alquiler.domain.service.EstacionService;
@@ -53,7 +54,7 @@ public class AlquilerServiceImpl implements AlquilerSevice {
         Integer alquilerId = maxAlquilerId+1;
         //TODO: Calcular monto
         //TODO: Calcular distacia
-        Alquiler alquiler = new Alquiler(alquilerId,idCliente,estado,estacionRetiro,estacionDevolucion,fechaHoraRetiro,fechaHoraDevolucion,monto,idTarifar);
+        Alquiler alquiler = new Alquiler(alquilerId,idCliente,estado,estacionRetiro,estacionDevolucion,fechaHoraRetiro,fechaHoraDevolucion,monto, Tarifa.builder().id(idTarifar).build());
         return this.alquilerRepository.save(alquiler);
     }
 
@@ -79,5 +80,10 @@ public class AlquilerServiceImpl implements AlquilerSevice {
                        Float monto,
                        Integer idTarifar) {
 
+    }
+
+    @Override
+    public List<Alquiler> alquileresByEstacionRetiro(Integer idEstacion) {
+        return this.alquilerRepository.findByEstacionRetiro(idEstacion);
     }
 }

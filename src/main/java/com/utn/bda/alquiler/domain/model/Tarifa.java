@@ -2,11 +2,11 @@ package com.utn.bda.alquiler.domain.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "tarifas")
@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Tarifa {
     @Id
     private Integer id;
@@ -37,4 +38,7 @@ public class Tarifa {
     private Float montoKm;
 
     private Float montoHora;
+
+    @OneToMany(mappedBy = "tarifa")
+    private List<Alquiler> alquilers;
 }

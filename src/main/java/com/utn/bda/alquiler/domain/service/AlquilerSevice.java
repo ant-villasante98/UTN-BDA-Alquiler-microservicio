@@ -32,4 +32,6 @@ public interface AlquilerSevice {
                 LocalDateTime fechaHoraDevolucion,
                 Float monto,
                 Integer idTarifa);
+
+    List<Alquiler> alquileresByEstacionRetiro(Integer idEstacion);
 }
