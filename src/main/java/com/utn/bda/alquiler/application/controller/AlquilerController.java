@@ -77,4 +77,12 @@ public class AlquilerController {
             return ResponseHandler.badRequest("No se pudo realizar la consulta");
         }
     }
+
+    // TODO: Utilizar @PatchMapping para finalizar la transaccion, debe de resibir un objeto en el Body
+    //
+    @PatchMapping("/finalizar-alquiler")
+    public ResponseEntity<Object> finalizarAlquiler(){
+        // Implementar finalizacion de alquiler
+        return ResponseHandler.success(null);
+    }
 }

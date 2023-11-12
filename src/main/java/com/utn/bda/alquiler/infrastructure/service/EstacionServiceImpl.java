@@ -19,7 +19,9 @@ public class EstacionServiceImpl implements EstacionService {
 
             return response.getBody();
         }
-        return null;
+        else {
+            throw  new RuntimeException("");
+        }
 
 
     }
