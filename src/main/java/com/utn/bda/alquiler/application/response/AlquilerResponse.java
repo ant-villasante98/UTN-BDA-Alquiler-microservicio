@@ -25,5 +25,5 @@ public class AlquilerResponse {
     private LocalDateTime fechaHoraDevolucion;
 
     private Float monto;
-    private TarifaResponse tarifa;
+    private Integer idTarifa;
 }

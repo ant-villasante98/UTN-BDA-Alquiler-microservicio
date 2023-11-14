@@ -20,7 +20,7 @@ public class EstacionServiceImpl implements EstacionService {
             return response.getBody();
         }
         else {
-            throw  new RuntimeException("");
+            throw  new RuntimeException(" no se puco obtener el recurso");
         }
 
 

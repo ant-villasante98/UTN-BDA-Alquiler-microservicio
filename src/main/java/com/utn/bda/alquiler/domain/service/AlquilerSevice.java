@@ -34,4 +34,6 @@ public interface AlquilerSevice {
                 Integer idTarifa);
 
     List<Alquiler> alquileresByEstacionRetiro(Integer idEstacion);
+
+    Alquiler finalizarAlquiler( Integer idAlquiler , LocalDateTime fechaDevolucion ,Integer estacionDevolucion);
 }

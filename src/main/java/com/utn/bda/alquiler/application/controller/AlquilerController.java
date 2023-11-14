@@ -1,8 +1,8 @@
 package com.utn.bda.alquiler.application.controller;
 
 
-import com.utn.bda.alquiler.application.ResponseHandler;
 import com.utn.bda.alquiler.application.request.AlquilerCreateRequest;
+import com.utn.bda.alquiler.application.request.AlquilerEndRequest;
 import com.utn.bda.alquiler.application.response.AlquilerResponse;
 import com.utn.bda.alquiler.domain.model.Alquiler;
 import com.utn.bda.alquiler.domain.service.AlquilerSevice;
@@ -27,27 +27,27 @@ public class AlquilerController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(){
+    public ResponseEntity<List<AlquilerResponse>> getAll(){
         List<Alquiler> alquileres = this.alquilerSevice.findAll();
         List<AlquilerResponse> alquilerResponses = alquileres.stream().map(alquilerMapperToDto).toList();
-        return ResponseHandler.success(alquilerResponses);
+        return new ResponseEntity<>(alquilerResponses,HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable Integer id){
+    public ResponseEntity<AlquilerResponse> getById(@PathVariable Integer id){
         try {
             Alquiler alquiler = this.alquilerSevice.findById(id).orElseThrow();
             AlquilerResponse alquilerResponse = this.alquilerMapperToDto.apply(alquiler);
-            return ResponseHandler.success(alquilerResponse);
+            return new ResponseEntity<>(alquilerResponse,HttpStatus.OK);
         }
         catch (Exception e){
             e.printStackTrace();
-            return ResponseHandler.generateResponse("No se encontro el recurso",HttpStatus.NOT_FOUND,null);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Object> createAlquiler(@RequestBody AlquilerCreateRequest alquilerCreate){
+    public ResponseEntity<AlquilerResponse> createAlquiler(@RequestBody AlquilerCreateRequest alquilerCreate){
         try {
             Alquiler alquiler = this.alquilerSevice
                     .create(alquilerCreate.getIdCliente(),
@@ -59,30 +59,37 @@ public class AlquilerController {
                             null,
                             alquilerCreate.getIdTarifa());
             AlquilerResponse alquilerResponse = this.alquilerMapperToDto.apply(alquiler);
-            return ResponseHandler.created(alquilerResponse);
+            return new ResponseEntity<>(alquilerResponse,HttpStatus.CREATED);
         }catch (Exception e){
             e.printStackTrace();
-            return  ResponseHandler.badRequest("No se pudo crear el recurso");
+            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/por-estacionretiro/{idEstacion}")
-    public ResponseEntity<Object> alquileresPorEstacionRetiro(@PathVariable Integer idEstacion){
+    public ResponseEntity<List<AlquilerResponse>> alquileresPorEstacionRetiro(@PathVariable Integer idEstacion){
         try{
             List<Alquiler> alquileres = this.alquilerSevice.alquileresByEstacionRetiro(idEstacion);
             List<AlquilerResponse> alquilerResponses = alquileres.stream().map(alquilerMapperToDto).toList();
-            return ResponseHandler.success(alquilerResponses);
+            return new ResponseEntity<>(alquilerResponses,HttpStatus.OK);
         }
         catch (Exception e){
-            return ResponseHandler.badRequest("No se pudo realizar la consulta");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    // TODO: Utilizar @PatchMapping para finalizar la transaccion, debe de resibir un objeto en el Body
-    //
-    @PatchMapping("/finalizar-alquiler")
-    public ResponseEntity<Object> finalizarAlquiler(){
-        // Implementar finalizacion de alquiler
-        return ResponseHandler.success(null);
+    @PatchMapping("/finalizar-alquiler/{id}")
+    public ResponseEntity<Object> finalizarAlquiler(@PathVariable Integer id , @RequestBody AlquilerEndRequest alquilerEnd){
+
+        try {
+
+            // Implementar finalizacion de alquiler
+            Alquiler alquiler = this.alquilerSevice.finalizarAlquiler(id, alquilerEnd.getFechaHoraDevolucion(),alquilerEnd.getEstacionDevolucion());
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

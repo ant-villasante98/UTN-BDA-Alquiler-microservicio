@@ -1,5 +1,6 @@
 package com.utn.bda.alquiler.domain.service.Implementacion;
 
+import com.utn.bda.alquiler.domain.CalcularMontoAlquiler;
 import com.utn.bda.alquiler.domain.model.Alquiler;
 import com.utn.bda.alquiler.domain.model.Estacion;
 import com.utn.bda.alquiler.domain.model.Tarifa;
@@ -9,6 +10,7 @@ import com.utn.bda.alquiler.domain.service.EstacionService;
 import com.utn.bda.alquiler.domain.service.ExchangeService;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +32,6 @@ public class AlquilerServiceImpl implements AlquilerSevice {
 
     @Override
     public Optional<Alquiler> findById(Integer id) {
-        //prueba
-        try {
-            Estacion estacion = this.estacionService.getById(2);
-            System.out.println(estacion.getNombre());
-            System.out.println(estacion);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return this.alquilerRepository.findById(id);
 
@@ -90,4 +83,21 @@ public class AlquilerServiceImpl implements AlquilerSevice {
     public List<Alquiler> alquileresByEstacionRetiro(Integer idEstacion) {
         return this.alquilerRepository.findByEstacionRetiro(idEstacion);
     }
+
+    @Override
+    public Alquiler finalizarAlquiler(Integer idAlquiler, LocalDateTime fechaDevolucion, Integer idEstacionDevolucion) {
+        Optional<Alquiler> alquilerOptional = this.alquilerRepository.findById(idAlquiler);
+        Alquiler alquiler = alquilerOptional.orElseThrow();
+        alquiler.setEstacionDevolucion(idEstacionDevolucion);
+        alquiler.setFechaHoraDevolucion(fechaDevolucion);
+        Estacion estacionRetiro = this.estacionService.getById(alquiler.getEstacionRetiro());
+        Estacion estacionDevolucion = this.estacionService.getById(alquiler.getEstacionDevolucion());
+        // Ponemos el estado como finalizado "2"
+        alquiler.setEstado(2);
+        float montoFinal = CalcularMontoAlquiler.calcularMontoAlquiler(alquiler,estacionRetiro,estacionDevolucion);
+        alquiler.setMonto(montoFinal);
+        Alquiler alquilerResult = this.alquilerRepository.save(alquiler);
+        return alquilerResult;
+    }
+
 }

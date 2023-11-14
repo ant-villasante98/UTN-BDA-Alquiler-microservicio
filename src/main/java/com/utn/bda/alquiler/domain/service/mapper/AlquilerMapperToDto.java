@@ -26,7 +26,7 @@ public class AlquilerMapperToDto implements Function<Alquiler, AlquilerResponse>
                 alquiler.getFechaHoraRetiro(),
                 alquiler.getFechaHoraDevolucion(),
                 alquiler.getMonto(),
-                tarifaMapperToDto.apply(alquiler.getTarifa())
+                alquiler.getTarifa().getId()
         );
     }
 }

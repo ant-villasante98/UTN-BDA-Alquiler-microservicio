@@ -13,7 +13,7 @@ public class AlquilerCreateRequest {
 
     private Integer estacionRetiro;
 
-
+ //Borrar?
     private Integer idTarifa;
 
 
