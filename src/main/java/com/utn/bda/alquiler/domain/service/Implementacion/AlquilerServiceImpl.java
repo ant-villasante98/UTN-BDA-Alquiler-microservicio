@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -109,6 +110,8 @@ public class AlquilerServiceImpl implements AlquilerSevice {
 
     // Método para calcular el monto del alquiler
     public double calcularMontoAlquiler(Alquiler alquiler) {
+        Estacion estacionRetiro = this.estacionService.getById(alquiler.getEstacionRetiro());
+        Estacion estacionDevolucion = this.estacionService.getById(alquiler.getEstacionDevolucion());
         // Obtener la información de las tablas relevantes en la base de datos
         // (costos por día, precio adicional por kilómetro, días promocionales, etc.)
 
@@ -117,41 +120,48 @@ public class AlquilerServiceImpl implements AlquilerSevice {
         Long minutosAlquiler = duracionAlquiler.toMinutes();
 
         // Calcular el costo fijo del alquiler
-        double costoFijo = obtenerCostoFijoPorDia(alquiler.getFechaHoraRetiro().getDayOfWeek());
+        float costoFijo = obtenerCostoFijoPorDia(alquiler);
 
         // Calcular el costo por hora completa
-        double costoPorHoraCompleta = calcularCostoPorHoraCompleta(minutosAlquiler);
+        float costoPorHoraCompleta = calcularCostoPorHoraCompleta(minutosAlquiler, alquiler);
 
         // Calcular el costo adicional por kilómetro
         double costoAdicionalPorKm = obtenerCostoAdicionalPorKm();
 
         // Calcular la distancia entre las estaciones de retiro y devolución
-        double distanciaEnKm = calcularDistanciaEntreEstaciones(alquiler.getEstacionRetiro(), alquiler.getEstacionDevolucion());
+        double distanciaEnKm = calcularDistanciaEntreEstaciones(estacionRetiro, estacionDevolucion);
 
         // Calcular el monto total antes de aplicar el descuento
         double montoTotal = costoFijo + costoPorHoraCompleta + (costoAdicionalPorKm * distanciaEnKm);
 
-        // Aplicar descuento si el día de retiro es un día promocional
-        if (esDiaPromocional(alquiler.getFechaHoraRetiro().getDayOfWeek())) {
-            double porcentajeDescuento = obtenerPorcentajeDescuento();
-            double montoDescuento = (porcentajeDescuento / 100) * montoTotal;
-            montoTotal -= montoDescuento;
-        }
+//        // Aplicar descuento si el día de retiro es un día promocional
+//        if (esDiaPromocional(alquiler.getFechaHoraRetiro().getDayOfWeek())) {
+//            double porcentajeDescuento = obtenerPorcentajeDescuento();
+//            double montoDescuento = (porcentajeDescuento / 100) * montoTotal;
+//            montoTotal -= montoDescuento;
+//        }
 
         return montoTotal;
     }
 
     // Métodos auxiliares (implementa estos métodos según tus necesidades)
-    private double obtenerCostoFijoPorDia(DayOfWeek dayOfWeek) {
+    private float obtenerCostoFijoPorDia(Alquiler alquiler) {
         // Implementa la lógica para obtener el costo fijo por día
         // desde la base de datos o cualquier otra fuente de datos
-        return 0.0;
+        return (float) alquiler.getTarifa().getMontoFijoAlquiler();
     }
 
-    private double calcularCostoPorHoraCompleta(Long minutos) {
+    private float calcularCostoPorHoraCompleta(Long minutos, Alquiler alquiler) {
         // Implementa la lógica para calcular el costo por hora completa
         // desde la base de datos o cualquier otra fuente de datos
-        return 0.0;
+        long minutosFraccion = minutos % 60;
+        long horas = minutos / 60;
+        float costoPorHora;
+        costoPorHora = horas * alquiler.getTarifa().getMontoHora();
+        float costoPorMinuto = minutosFraccion * alquiler.getTarifa().getMontoMinutoFraccion();
+        costoPorHora += costoPorMinuto;
+
+        return costoPorHora;
     }
 
     private double obtenerCostoAdicionalPorKm() {
@@ -163,20 +173,31 @@ public class AlquilerServiceImpl implements AlquilerSevice {
     private double calcularDistanciaEntreEstaciones(Estacion estacionRetiro, Estacion estacionDevolucion) {
         // Implementa la lógica para calcular la distancia entre estaciones
         // Puedes usar algoritmos de cálculo de distancia o servicios externos
-        return 0.0;
+        double distancia = calcularDistancia(estacionRetiro.getLatitud(), estacionRetiro.getLongitud(),
+                estacionDevolucion.getLatitud(), estacionDevolucion.getLongitud());
+        return distancia*11000;
     }
 
-    private boolean esDiaPromocional(DayOfWeek dayOfWeek) {
-        // Implementa la lógica para verificar si el día es promocional
-        // desde la base de datos o cualquier otra fuente de datos
-        return false;
+    private double calcularDistancia(double latitud1, double longitud1, double latitud2, double longitud2) {
+    // Aquí debes implementar el cálculo de la distancia entre dos coordenadas geográficas.
+    // Puedes utilizar la fórmula de la distancia euclidiana para calcular la distancia.
+    // Ten en cuenta que esta fórmula es una simplificación y no es 100% precisa, pero es suficiente para este ejemplo.
+        double latitudDiferencia = latitud1 - latitud2;
+        double longitudDiferencia = longitud1 - longitud2;
+        return Math.sqrt(latitudDiferencia * latitudDiferencia + longitudDiferencia * longitudDiferencia);
     }
 
-    private double obtenerPorcentajeDescuento() {
-        // Implementa la lógica para obtener el porcentaje de descuento
-        // desde la base de datos o cualquier otra fuente de datos
-        return 0.0;
-    }
+//    private boolean esDiaPromocional(DayOfWeek dayOfWeek) {
+//        // Implementa la lógica para verificar si el día es promocional
+//        // desde la base de datos o cualquier otra fuente de datos
+//        return false;
+//    }
+
+//    private double obtenerPorcentajeDescuento() {
+//        // Implementa la lógica para obtener el porcentaje de descuento
+//        // desde la base de datos o cualquier otra fuente de datos
+//        return 0.0;
+//    }
 }
 
 
