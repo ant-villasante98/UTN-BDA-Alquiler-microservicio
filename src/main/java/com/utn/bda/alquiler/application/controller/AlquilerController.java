@@ -85,4 +85,24 @@ public class AlquilerController {
         // Implementar finalizacion de alquiler
         return ResponseHandler.success(null);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateAlquiler(@PathVariable Integer id, @RequestBody AlquilerCreateRequest alquilerUpdate) {
+        try {
+            this.alquilerSevice.update(id,
+                    alquilerUpdate.getIdCliente(),
+                    1,
+                    alquilerUpdate.getEstacionRetiro(),
+                    null,
+                    LocalDateTime.now(),
+                    null,
+                    null,
+                    alquilerUpdate.getIdTarifa());
+
+            return ResponseHandler.success("Alquiler updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseHandler.badRequest("Failed to update alquiler");
+        }
+    }
 }
